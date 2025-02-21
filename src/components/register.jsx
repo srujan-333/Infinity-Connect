@@ -1,47 +1,88 @@
-
 import React, { useState } from "react";
 import "./register.css";
+import { Link } from "react-router-dom";
 
 const RegistrationForm = () => {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    gender: "",
-    age: "",
-    phone: "",
+  const [formData1, setFormData] = useState({
+    name: "",
+    pno: "",
     email: "",
-    country: "",
-    instagramId: "",
-    facebookId: "",
-    linkedInId: "",
+    insta_id: "",
+    facebook_id: "",
+    linkdin_id: "", // ✅ Fixed spelling mistake
+    profile: "",
+    image: "",
   });
 
   const [profileImage, setProfileImage] = useState(null);
 
+  // ✅ Handle input changes dynamically
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
   };
 
+  // ✅ Handle image file selection
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+
     if (file) {
+      // ✅ Store file object in state
+      setFormData((prevState) => ({
+        ...prevState,
+        image: file,
+      }));
+
+      console.log("File selected:", file);
+
+      // ✅ Convert image to Base64 for preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result);
+        setFormData((prevState) => ({
+          ...prevState,
+          profile: reader.result,
+        }));
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = (e) => {
+  // ✅ Handle form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Registration Successful!");
-    console.log(formData);
+    console.log(formData1);
+    // ✅ Create FormData inside handleSubmit (not globally)
+    const formData = new FormData();
+    formData.append("name", formData1.name);
+    formData.append("email", formData1.email);
+    formData.append("pno", formData1.pno);
+    formData.append("insta_id", formData1.insta_id);
+    formData.append("facebook_id", formData1.facebook_id);
+    formData.append("linkdin_id", formData1.linkdin_id);
+    formData.append("profile", formData1.profile);
+    formData.append("image", formData1.image);
+
+    try {
+      const response = await fetch("http://localhost:8080/users/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error("Upload failed");
+
+      console.log("FormData submitted:", formData);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
   };
 
   return (
     <div className="contai">
       <form className="registration-form" onSubmit={handleSubmit}>
+        {/* Profile Photo Upload */}
         <div className="profile-photo">
           <input
             type="file"
@@ -59,88 +100,65 @@ const RegistrationForm = () => {
           </label>
         </div>
 
+        {/* Name */}
         <input
           type="text"
-          name="firstName"
-          placeholder="First Name"
-          value={formData.firstName}
+          name="name"
+          placeholder="Name"
+          value={formData1.name}
           onChange={handleChange}
           required
         />
-        <input
-          type="text"
-          name="lastName"
-          placeholder="Last Name"
-          value={formData.lastName}
-          onChange={handleChange}
-          required
-        />
-        
-        <select name="gender" value={formData.gender} onChange={handleChange} required>
-          <option value="">Select Gender</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-          <option value="Other">Other</option>
-        </select>
 
-        <input
-          type="number"
-          name="age"
-          placeholder="Age"
-          value={formData.age}
-          onChange={handleChange}
-          required
-        />
-        
+        {/* Phone Number */}
         <input
           type="text"
-          name="phone"
+          name="pno"
           placeholder="Phone Number"
-          value={formData.phone}
+          value={formData1.pno}
           onChange={handleChange}
           required
         />
 
+        {/* Email */}
         <input
           type="email"
           name="email"
           placeholder="Email"
-          value={formData.email}
+          value={formData1.email}
           onChange={handleChange}
           required
         />
 
-        <select name="country" value={formData.country} onChange={handleChange} required>
-          <option value="">Select Country</option>
-          <option value="USA">USA</option>
-          <option value="India">India</option>
-          <option value="UK">UK</option>
-          <option value="Australia">Australia</option>
-        </select>
-
+        {/* Social Media Handles */}
         <input
           type="text"
-          name="instagramId"
+          name="insta_id"
           placeholder="Instagram ID"
-          value={formData.instagramId}
+          value={formData1.insta_id}
           onChange={handleChange}
         />
         <input
           type="text"
-          name="facebookId"
+          name="facebook_id"
           placeholder="Facebook ID"
-          value={formData.facebookId}
+          value={formData1.facebook_id}
           onChange={handleChange}
         />
         <input
           type="text"
-          name="linkedInId"
+          name="linkdin_id"
           placeholder="LinkedIn ID"
-          value={formData.linkedInId}
+          value={formData1.linkdin_id}
           onChange={handleChange}
         />
 
-        <button type="submit">Sign Up</button>
+        {/* Submit Button */}
+        <button type="submit">
+            <Link to="/home">
+                SUBMIT
+            </Link>
+            </button>
       </form>
     </div>
   );
