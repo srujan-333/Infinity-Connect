@@ -9,7 +9,7 @@ const Header = () => {
       <div className="d-flex flex-row justify-content-around w-100 p-3 pt-2 pb-2">
         {/* Brand Logo */}
         <Link className="navbar-brand d-flex align-items-center" to="/">
-          <span className="fw-semibold">SCM2.0</span>
+          <span className="fw-semibold">InfinityConnect</span>
         </Link>
 
         {/* Toggle Button for Mobile */}
@@ -53,10 +53,10 @@ const Header = () => {
 
         {/* User Actions */}
         <div className="d-flex gap-2">
-          <Link className="btn btn-dark" to="/user/profile">
+          <Link className="btn btn-dark" to="/profile">
             Sankeerth
           </Link>
-          <Link className="btn btn-primary" to="/login">
+          <Link className="btn btn-primary" to="/">
             Logout
           </Link>
         </div>

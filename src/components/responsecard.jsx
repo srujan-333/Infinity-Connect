@@ -4,8 +4,21 @@ import "./responsecard.css";
 function ResponseCard({p}){
     
     console.log(p)
-        const [isFollowing, setIsFollowing] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(false);
+
+    const follow = async()=>{
+      console.log("Clicking");
+      let form = new FormData();
+      let user_id = localStorage.getItem("user_id");
+      form.append("user_id",user_id);
+      form.append("follower_id",p.id)
+      console.log(p.user_id,p.id);
+      let response = await fetch("http://localhost:8080/users/follow",{ method: "POST",
+        body: form});
+      let row = await response.json();
       
+
+    }  
       
     return(
         <div className="user-profile">
@@ -29,6 +42,9 @@ function ResponseCard({p}){
           <p><strong>Email:</strong> {p.email || "N/A"}</p>
           <p><strong>Instagram ID:</strong> {p.insta_id || "N/A"}</p>
           <p><strong>Facebook ID:</strong> {p.facebook_id || "N/A"}</p>
+          <div>
+            <button className="btn btn-primary" onClick={follow}>Follow</button>
+          </div>
         </div>
   
         {/* Follow/Unfollow Button */}

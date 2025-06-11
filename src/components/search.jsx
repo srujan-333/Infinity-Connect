@@ -10,6 +10,7 @@ const Search = () => {
   const [res,setResult] = useState("sank");
   const [row,setRow] = useState({id:1,imageUrl:"",instagramId:"",phone:"",email:"",facebookId:"",name:"hari"});
   const [show,setshow]=useState(false);
+  const [dis,setdisclamier]=useState(false);
   const handleSearchTypeChange = (type) => {
     setshow(false);
     setSearchType(type);
@@ -29,24 +30,32 @@ const Search = () => {
     console.log("id above");
     let response = await fetch(`http://localhost:8080/users/${id}`,{method: "GET",headers: {"Accept": "application/json"}});
     let data = await response.json();
-    console.log(data.name);
-    setRow({name:data.name,id:data.id,profile:data.profile,email:data.email,pno:data.pno,insta_id:data.insta_id,facebook_id:data.facebook_id,linkdin_id:data.linkdin_id});
+    console.log(data);
+    setRow({user_id:id,name:data.name,id:data.id,profile:data.profile,email:data.email,pno:data.pno,insta_id:data.insta_id,facebook_id:data.facebook_id,linkdin_id:data.linkdin_id});
     setshow(true);
+    if(data.privacy === true){
+      console.log("entering");
+      setshow(false);
+      setdisclamier(true);
+    }
+    else{
+      setdisclamier(false);
+    }
 }
 
-  const submitdata = async (event) => {
+const submitdata = async (event) => {
     event.preventDefault();
-if(searchType==="photo"){
-    if (!image) {
-      alert("Please select an image first!");
-      return;
-    }
+    if(searchType==="photo"){
+      if (!image) {
+        alert("Please select an image first!");
+        return;
+      }
 
     // Creating FormData object to send the file
-    const formData = new FormData();
-    formData.append("image", image);
-   console.log(image);
-    try {
+      const formData = new FormData();
+      formData.append("image", image);
+      console.log(image);
+      try {
         const response = await fetch("http://localhost:8080/users/find_similar", {
             method: "POST",
             body: formData
@@ -57,15 +66,15 @@ if(searchType==="photo"){
         console.log(result.id);
         getdata(result.id);
         
-    } catch (error) {
-      console.error("Error uploading image:", error);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
     }
-}
-else if(searchType==="name")
-{
+  else if(searchType==="name")
+  {
     if(!searchValue)
     {
-        alert("Please enter an Name!");
+      alert("Please enter an Name!");
       return;
     }
     const formData = new FormData();
@@ -76,6 +85,7 @@ else if(searchType==="name")
             method: "POST",
             body: formData
         });
+        console.log("this is response");
         console.log(response);
         const result = await response.json();
         setResult(result);
@@ -118,8 +128,8 @@ else if(searchType==="name")
                     <button type="submit">Search</button>
                 </form>
                 <div>
-                    
                     {show && <ResponseCard p={row}/>}
+                    {dis && <h1 className="mt-5">This account is private 🔒</h1>}
                 </div>
             </div>
         </div>

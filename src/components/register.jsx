@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import "./register.css";
-import { Link } from "react-router-dom";
+import { Link,useNavigate} from "react-router-dom";
 
 const RegistrationForm = () => {
+  const navigate = useNavigate();
   const [formData1, setFormData] = useState({
     name: "",
     pno: "",
@@ -12,6 +13,7 @@ const RegistrationForm = () => {
     linkdin_id: "", // ✅ Fixed spelling mistake
     profile: "",
     image: "",
+    password:""
   });
 
   const [profileImage, setProfileImage] = useState(null);
@@ -27,9 +29,10 @@ const RegistrationForm = () => {
   // ✅ Handle image file selection
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-
+    
     if (file) {
       // ✅ Store file object in state
+      //here file contains image which is in blob format
       setFormData((prevState) => ({
         ...prevState,
         image: file,
@@ -53,6 +56,7 @@ const RegistrationForm = () => {
   // ✅ Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     console.log(formData1);
     // ✅ Create FormData inside handleSubmit (not globally)
     const formData = new FormData();
@@ -64,7 +68,8 @@ const RegistrationForm = () => {
     formData.append("linkdin_id", formData1.linkdin_id);
     formData.append("profile", formData1.profile);
     formData.append("image", formData1.image);
-
+    formData.append("password",formData1.password);
+    // sessionStorage.setItem("userId", id);
     try {
       const response = await fetch("http://localhost:8080/users/upload", {
         method: "POST",
@@ -74,6 +79,7 @@ const RegistrationForm = () => {
       if (!response.ok) throw new Error("Upload failed");
 
       console.log("FormData submitted:", formData);
+      navigate("/home");
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -106,6 +112,15 @@ const RegistrationForm = () => {
           name="name"
           placeholder="Name"
           value={formData1.name}
+          onChange={handleChange}
+          required
+        />
+
+        <input
+          type="password"
+          name="password"
+          placeholder="Enter Password"
+          value={formData1.password}
           onChange={handleChange}
           required
         />
@@ -155,9 +170,7 @@ const RegistrationForm = () => {
 
         {/* Submit Button */}
         <button type="submit">
-            <Link to="/home">
-                SUBMIT
-            </Link>
+            Submit
             </button>
       </form>
     </div>
